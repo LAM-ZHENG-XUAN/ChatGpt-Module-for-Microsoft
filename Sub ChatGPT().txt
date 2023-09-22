@@ -1,0 +1,25 @@
+Sub ChatGPT()
+    Dim selectedText As String
+    Dim apiKey As String
+    Dim response As Object, re As String
+    Dim midString As String
+    Dim ans As String
+    If Selection.Type = wdSelectionNormal Then
+        selectedText = Selection.Text
+        selectedText = Replace(selectedText, ChrW$(13), "")
+        apiKey = "Your API KEY"
+        URL = "https://api.openai.com/v1/chat/completions"
+        Set response = CreateObject("MSXML2.XMLHTTP")
+        response.Open "POST", URL, False
+        response.setRequestHeader "Content-Type", "application/json"
+        response.setRequestHeader "Authorization", "Bearer " + apiKey
+        response.Send "{""model"":""gpt-3.5-turbo"", ""messages"":[{""role"":""user"",""content"":""" & selectedText & """}], ""temperature"":0.7}"
+        re = response.responseText
+        midString = Mid(re, InStr(re, """content"":""") + 11)
+        ans = Split(midString, """")(0)
+        ans = Replace(ans, "\n", vbCrLf)
+        Selection.Text = selectedText & vbNewLine & ans
+    Else
+        Exit Sub
+    End If
+End Sub
